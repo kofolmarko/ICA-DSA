@@ -43,7 +43,9 @@ def iterate_for_scenario(scenario):
                     'SPEED',
                     'SPEED_LIMIT',
                     'ACCELERATION',
-                    'ACCELERATION_Y'
+                    'ACCELERATION_Y',
+                    'BRAKE_PEDAL',
+                    'INDICATORS'
                 ],
                 chunksize=1000000,
                 low_memory=False,
@@ -74,6 +76,8 @@ def iterate_for_scenario(scenario):
                 interp_speed_limit = interp1d(timestamps, chunk['SPEED_LIMIT'].to_numpy(), kind='linear')
                 interp_acceleration = interp1d(timestamps, chunk['ACCELERATION'].to_numpy(), kind='linear')
                 interp_acceleration_y = interp1d(timestamps, chunk['ACCELERATION_Y'].to_numpy(), kind='linear')
+                interp_brake_pedal = interp1d(timestamps, chunk['BRAKE_PEDAL'].to_numpy(), kind='linear')
+                interp_indicators = interp1d(timestamps, chunk['INDICATORS'].to_numpy(), kind='linear')
 
                 # Generate a new set of timestamps spaced by the target time step
                 new_timestamps = np.arange(timestamps[0], timestamps[-1], target_time_step)
@@ -87,6 +91,8 @@ def iterate_for_scenario(scenario):
                 resampled_speed_limit = interp_speed_limit(new_timestamps)
                 resampled_acceleration = interp_acceleration(new_timestamps)
                 resampled_acceleration_y = interp_acceleration_y(new_timestamps)
+                resampled_brake_pedal = interp_brake_pedal(new_timestamps)
+                resampled_indicators = interp_indicators(new_timestamps)
 
                 # ! There are more frames than data samples, most likely because of the resampling ! #
                 # ? Right now this loop does nothing, but that's fine for out semi-automatic purposes ? #
@@ -102,6 +108,8 @@ def iterate_for_scenario(scenario):
                         resampled_speed_limit = resampled_speed_limit[i:]
                         resampled_acceleration = resampled_acceleration[i:]
                         resampled_acceleration_y = resampled_acceleration_y[i:]
+                        resampled_brake_pedal = resampled_brake_pedal[i:]
+                        resampled_indicators = resampled_indicators[i:]
                         break
 
                 # Combine the resampled data into a single DataFrame
@@ -116,11 +124,14 @@ def iterate_for_scenario(scenario):
                     'SPEED_LIMIT': resampled_speed_limit,
                     'ACCELERATION': resampled_acceleration,
                     'ACCELERATION_Y': resampled_acceleration_y,
+                    'BRAKE_PEDAL': resampled_brake_pedal,
+                    'INDICATORS': resampled_indicators
                 })
 
             # Initialize variables
             chunk_num = 0
             temp_df = pd.DataFrame()
+            # Amount of frames after driving mode switch
             next_frames = 100
 
             # Create directory for chunks

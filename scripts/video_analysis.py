@@ -80,7 +80,14 @@ for video in os.listdir(videos_dir):
             'CHUNK': [],
             'FRAME': [],
             'DRIVING_MODE': [],
-            'OBJECTS': [] # All of the looked at objects in one frame separated by a coma
+            'SEEN_OBJECTS': [], # All of the looked at objects in one frame separated by a coma
+            'STEERING_WHEEL_ANGLE': [],
+            'ACCELERATION': [],
+            'ACCELERATION_Y': [],
+            'SPEED': [],
+            'SPEED_LIMIT': [],
+            'BRAKE_PEDAL': [],
+            'INDICATORS': [],
         }
 
         # Get a list of all chunks inside the chunks directory
@@ -92,7 +99,7 @@ for video in os.listdir(videos_dir):
             df = pd.read_csv(chunk)
 
             # Takes one frame per loop
-            for f in df['FRAME']:
+            for fidx, f in enumerate(df['FRAME']):
                 cap.set(cv2.CAP_PROP_POS_FRAMES, f)
                 _, frame = cap.read()
                 _, view_markers_frame = cap.read()
@@ -264,7 +271,14 @@ for video in os.listdir(videos_dir):
                 data_export['CHUNK'].append(index)
                 data_export['FRAME'].append(int(f))
                 data_export['DRIVING_MODE'].append(auto_drive_text)
-                data_export['OBJECTS'].append(looked_at_objects)
+                data_export['SEEN_OBJECTS'].append(looked_at_objects)
+                data_export['STEERING_WHEEL_ANGLE'].append(df['STEERING_WHEEL_ANGLE'][fidx])
+                data_export['ACCELERATION'].append(df['ACCELERATION'][fidx])
+                data_export['ACCELERATION_Y'].append(df['ACCELERATION_Y'][fidx])
+                data_export['SPEED'].append(df['SPEED'][fidx])
+                data_export['SPEED_LIMIT'].append(df['SPEED_LIMIT'][fidx])
+                data_export['BRAKE_PEDAL'].append(df['BRAKE_PEDAL'][fidx])
+                data_export['INDICATORS'].append(df['INDICATORS'][fidx])
 
                 # Quit if 'q' is pressed, change to waitKey(0) to freeze each frame
                 key = cv2.waitKey(1) & 0xFF
