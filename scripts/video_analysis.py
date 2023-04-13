@@ -29,43 +29,10 @@ def rectangles_intersect(rect1_tl, rect1_br, rect2_tl, rect2_br):
         return False
     return True
 
-# Read the labels file and assign a random color to each label
-label_names = []
-label_colors = []
-
-with open('helpers/labels.txt', 'r') as file:
-    lines = file.read().splitlines()
-    for line in lines:
-        label_names.append(line.split(' ')[0])
-        color = np.random.randint(0, 255, size=(3,)).tolist()
-        color = [int(c) for c in color]
-        label_colors.append(color)
-
-# Load in the trained model
-model = torch.hub.load('ultralytics/yolov5', 'custom', path='../yolo/best.pt')
-
-# Enable/disable checking for multiple view_markers by pressing 'C' key
-check_for_multiple_view_markers = False
-
-# Path to videos directory
-parent_dir = '../simulator_data'
-videos_dir = os.path.join(parent_dir, 'videos')
-
-# Create the results directory
-video_analysis_data_dir = '../post_analysis/video_analysis'
-if not os.path.exists(video_analysis_data_dir):
-    os.mkdir(video_analysis_data_dir)
-
-# @ MAIN LOOP @ #
-# Iterate over each directory
-for video in os.listdir(videos_dir):
-    # Skip file if it's not .mp4
-    video_split = video.split('.', 1)
-    suffix = video_split[-1]
-    if suffix != 'mp4':
-        continue
-
+# @ MAIN ANALYSIS FUNCTION @ #
+def video_analysis(video):
     # Construct the filename for the mp4 file, chunks directory and results directory
+    video_split = video.split('.', 1)
     user = video_split[0]
     mp4_file = os.path.join(videos_dir, video)
     chunks_dir = os.path.join('../post_analysis', 'chunks', f'chunks_{user}')
@@ -74,6 +41,9 @@ for video in os.listdir(videos_dir):
     if os.path.isfile(mp4_file):
         # Load in the video
         cap = cv2.VideoCapture(mp4_file)
+
+        # Enable/disable checking for multiple view_markers by pressing 'C' key
+        check_for_multiple_view_markers = False
 
         # Dictionary for creating a dataframe for the final .csv file
         data_export = {
@@ -298,3 +268,47 @@ for video in os.listdir(videos_dir):
         # Close the video
         cap.release()
         cv2.destroyAllWindows()
+
+# Check for argv
+if len(sys.argv) != 1 and len(sys.argv) != 3:
+    print('Incorrectly provided arguments, please run the script as follows:')
+    print('> python3 video_analysis.py user_id scenario_id')
+    exit(1)
+
+# Read the labels file and assign a random color to each label
+label_names = []
+label_colors = []
+
+with open('helpers/labels.txt', 'r') as file:
+    lines = file.read().splitlines()
+    for line in lines:
+        label_names.append(line.split(' ')[0])
+        color = np.random.randint(0, 255, size=(3,)).tolist()
+        color = [int(c) for c in color]
+        label_colors.append(color)
+
+# Load in the trained model
+model = torch.hub.load('ultralytics/yolov5', 'custom', path='../yolo/best.pt')
+
+# Path to videos directory
+parent_dir = '../simulator_data'
+videos_dir = os.path.join(parent_dir, 'videos')
+
+# Create the results directory
+video_analysis_data_dir = '../post_analysis/video_analysis'
+if not os.path.exists(video_analysis_data_dir):
+    os.mkdir(video_analysis_data_dir)
+
+# @ MAIN LOOP @ #
+# If specific video provided, call once, otherwise loop through all
+if len(sys.argv) == 3:
+    print(sys.argv[1])
+    video_analysis(f'user_{sys.argv[1]}_s{sys.argv[2]}.mp4')
+elif len(sys.argv) == 1:
+    for video in os.listdir(videos_dir):
+        # Skip file if it's not .mp4
+        video_split = video.split('.', 1)
+        suffix = video_split[-1]
+        if suffix != 'mp4':
+            continue
+        video_analysis(video)

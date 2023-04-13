@@ -132,7 +132,7 @@ def iterate_for_scenario(scenario):
             chunk_num = 0
             temp_df = pd.DataFrame()
             # Amount of frames after driving mode switch
-            next_frames = 100
+            next_frames = target_fps * 15
 
             # Create directory for chunks
             post_analysis_dir = '../post_analysis'
