@@ -126,7 +126,7 @@ def tor_looking(chunk: pd.DataFrame):
     data['TOR_HUD'].append(hud_frames / all_frames)
     data['TOR_OTHER_OR_UNDEFINED'].append(other_frames / all_frames)
 
-def after_to(chunk: pd.DataFrame):
+def after_tor(chunk: pd.DataFrame):
     mask = (chunk['DRIVING_MODE'] == 'MANUAL')
     chunk = chunk[mask].head(5 * FPS)
 
@@ -182,7 +182,7 @@ for user in sorted(os.listdir(post_video_anaylsis_dir)):
             fill_empty_adl() # TOR is present, fill all ADL colimns with empty
             tor_looking(chunk) # Calculate % of looked at objects before TO
             tor_reaction(chunk) # Determine reaction time and type
-            after_to(chunk) # Situational awareness after TO
+            after_tor(chunk) # Situational awareness after TO
 
 grading_data_path = '../post_analysis/grading'
 if not os.path.exists(grading_data_path):
