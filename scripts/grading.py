@@ -128,14 +128,14 @@ def tor_looking(chunk: pd.DataFrame):
 
 def after_to(chunk: pd.DataFrame):
     mask = (chunk['DRIVING_MODE'] == 'MANUAL')
-    chunk = chunk[mask]
+    chunk = chunk[mask].head(5 * FPS)
 
-    all_frames = len(chunk.head(5 * FPS))
+    all_frames = len(chunk)
 
     data['TOR_SPEEDING'].append(chunk[(chunk['SPEED'] > (chunk['SPEED_LIMIT'])*1.10)]['FRAME'].count() / all_frames)
     data['TOR_ACC'].append(chunk[(chunk['ACCELERATION'] > 1.0)]['ACCELERATION'].count() / all_frames)
     data['TOR_DCC'].append(chunk[(chunk['ACCELERATION'] < -2.0)]['ACCELERATION'].count() / all_frames)
-    data['TOR_ACC_Y'].append(chunk[(chunk['ACCELERATION_Y'].abs() > 0.5)]['ACCELERATION'].count() / all_frames)
+    data['TOR_ACC_Y'].append(chunk[(chunk['ACCELERATION_Y'].abs() > 0.5)]['ACCELERATION_Y'].count() / all_frames)
 
 # @ MAIN LOOP @ #
 
