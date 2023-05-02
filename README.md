@@ -27,7 +27,9 @@ The scripts included inside the directory are the following:
     Displays the results in different forms such as pie charts or bar graphs.
 ## Yolo
 The ***yolo*** folder contains a machine learning model created using PyTorch. Besides the **best.pt** file there is also a **custom_data.yaml** file, used in performing the machine learning process. Training a custom YOLOv5 model was done on an official Google Colab page provided on the YOLOv5 Github repository.
-https://github.com/ultralytics/yolov5
+YOLOv5 repository https://github.com/ultralytics/yolov5
+Modified official training example https://colab.research.google.com/drive/1BRF8TdAz7-u1nCC5tF6TXEdDYBidrkC-?usp=sharing
+Labeling tool repository https://github.com/developer0hye/Yolo_Label
 ## Other
 There are several folders excluded from this repository such as ***simulator_data*** and ***post_analysis***, containing data to be processed and already processed data. 
 
