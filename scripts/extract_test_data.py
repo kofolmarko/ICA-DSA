@@ -5,7 +5,7 @@ import random
 from helpers.progress_bar import *
 
 # Extract program arguments
-video_folder_path = '../imulator_data/videos'
+video_folder_path = '../simulator_data/videos'
 num_train_images = 210
 num_val_images = 60
 num_test_images = 30
