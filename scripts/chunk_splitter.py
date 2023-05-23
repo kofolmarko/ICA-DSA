@@ -64,7 +64,7 @@ def iterate_for_scenario(scenario):
                 # Get the timestamps from the current chunk of data
                 timestamps = chunk['TIMESTAMP'].to_numpy()
 
-                # Convert to miliseconds, because microseconds are too much to handle
+                # Convert to seconds, because miliseconds are too much to handle
                 timestamps = timestamps / 1000
 
                 # Create an interpolation function for each column
