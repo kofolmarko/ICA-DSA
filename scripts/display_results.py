@@ -20,14 +20,12 @@ def evaluate_so(adl_df, tor_df, hud):
     tor_scores = []
 
     for idx, row in adl_df.iterrows():
-        row_score = 0
-        if row['ADL_UNDER_THRESHOLD'] == 'TRUE':
-            row_score += 1
-        if row['ADL_FAIL'] == False:
-            row_score += 1
+        row_score = 1.5
+        if row['ADL_UNDER_THRESHOLD'] != 'TRUE':
+            row_score -= 0.5
         row_score += float(row['ADL_ROAD'])
         row_score -= float(row['ADL_DISTRACTION'])
-        row_score = row_score / 4
+        row_score = row_score / 3
         adl_scores.append(round(row_score, 3))
 
     for idx, row in tor_df.iterrows():
@@ -43,7 +41,7 @@ def evaluate_so(adl_df, tor_df, hud):
         row_score -= float(row['TOR_ACC_Y'])
         if hud:
             row_score += float(row['TOR_HUD'])
-            row_score = row_score / 9
+            row_score = row_score / 8.5
         else:
             row_score = row_score / 8
         tor_scores.append(round(row_score, 3))
@@ -71,7 +69,7 @@ def single_user_charts(user_df: pd.DataFrame, adl_scores, tor_scores, display):
         wedges1, texts1, autolabels1 = axs[0, i].pie(values_adl, labels=None, startangle=90, autopct='%1.1f%%', colors=colors)
         
         adl_title_text = f'ADR {i + 1}'
-        if user_adl['ADL_UNDER_THRESHOLD'].values[i] != 'TRUE':
+        if user_adl['ADL_UNDER_THRESHOLD'].values[i] != 'True':
             adl_title_text += '\nTime to transition\nexceeded threshold'
         axs[0, i].set_title(adl_title_text)
         axs[0, i].annotate(f"SA score: {round(adl_scores[i] * 100, 1)}%", xy=(0.5, -0.05), xycoords='axes fraction', ha='center', va='bottom')
@@ -108,6 +106,8 @@ def single_user_charts(user_df: pd.DataFrame, adl_scores, tor_scores, display):
     legend_title = 'Seen objects'
     if hud:
         legend_title += ' (with HUD)'
+    else: 
+        legend_title += ' (no HUD)'
     axs[0, 0].legend(wedges1, labels, loc="best", title=legend_title, bbox_to_anchor=(0, 1.2))
 
     # Mean values
@@ -130,14 +130,14 @@ def single_user_charts(user_df: pd.DataFrame, adl_scores, tor_scores, display):
 
     # Draw horizontal bar graphs, show in percentage
     axs[2,0].barh(labels, values_adl, height=1, color=colors)
-    axs[2,0].set_title('Mean % of seen objects before AD')
+    axs[2,0].set_title('Percentage of seen objects before AD')
     axs[2,0].set_xlim([0, 1])
     axs[2,0].set_xticks([0, 0.25, 0.5, 0.75, 1])
     axs[2,0].xaxis.set_major_formatter(FuncFormatter(lambda x, loc: f'{x*100:.0f}%'))
     axs[2,0].invert_yaxis()
 
     axs[2,2].barh(labels, values_tor, height=1, color=colors)
-    axs[2,2].set_title('Mean % of seen objects after TOR (5 s)')
+    axs[2,2].set_title('Percentage of seen objects after TOR (5 s)')
     axs[2,2].set_xlim([0, 1])
     axs[2,2].set_xticks([0, 0.25, 0.5, 0.75, 1])
     axs[2,2].xaxis.set_major_formatter(FuncFormatter(lambda x, loc: f'{x*100:.0f}%'))
@@ -212,7 +212,8 @@ with open('helpers/user_ids.txt', 'r') as f:
         user = f'user_{id}'
         mask = (df['USER'] == user)
         user_df = df[mask]
-        if (user_df['ADL_FAIL'] == True).any():
+        # Skip user 164 because of bad data
+        if (id == 164):
             continue
         hud = True
         mask = (df['USER'] == user) & (df['HUD'] == hud)
