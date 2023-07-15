@@ -29,7 +29,7 @@ The scripts included inside the directory are the following:
 The ***yolo*** folder contains a machine learning model created using PyTorch. Besides the **best.pt** file there is also a **custom_data.yaml** file, used in performing the machine learning process. Training a custom YOLOv5 model was done on an official Google Colab page provided on the YOLOv5 Github repository.
 >YOLOv5 repository https://github.com/ultralytics/yolov5
 
->Modified official training example https://colab.research.google.com/drive/1BRF8TdAz7-u1nCC5tF6TXEdDYBidrkC-?usp=sharing
+>Modified official training example https://colab.research.google.com/drive/1dqDmPicbrlGFgMcxae6tOty8i0v6P0GJ?usp=sharing
 
 >Labeling tool repository https://github.com/developer0hye/Yolo_Label
 ## Other
